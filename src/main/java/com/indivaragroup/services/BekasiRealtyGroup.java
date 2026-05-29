@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -25,7 +26,7 @@ public class BekasiRealtyGroup {
     // TASK 2
     public void filterUnSold() {
         List<PropertyAsset> copy = new ArrayList<>(properties);
-        copy.removeIf(p->p.isSold());
+        copy.removeIf(p -> p.isSold());
         copy.forEach(PropertyAsset::print);
     }
 
@@ -36,11 +37,11 @@ public class BekasiRealtyGroup {
     }
 
     // TASK 4
-    Predicate<PropertyAsset> houseOnly = p->p.getPropertyType().equalsIgnoreCase("rumah");
-    Predicate<PropertyAsset> locationBekasiSelatan = p->p.getLocation().equalsIgnoreCase("bekasi selatan");
-    Predicate<PropertyAsset> priceUnder1B = p->p.getPrice() < 1_000_000_000;
-    Predicate<PropertyAsset> landAreaMoreThan100 = p->p.getLandArea() > 100;
-    Predicate<PropertyAsset> available = p->!p.isSold();
+    Predicate<PropertyAsset> houseOnly = p -> p.getPropertyType().equalsIgnoreCase("rumah");
+    Predicate<PropertyAsset> locationBekasiSelatan = p -> p.getLocation().equalsIgnoreCase("bekasi selatan");
+    Predicate<PropertyAsset> priceUnder1B = p -> p.getPrice() < 1_000_000_000;
+    Predicate<PropertyAsset> landAreaMoreThan100 = p -> p.getLandArea() > 100;
+    Predicate<PropertyAsset> available = p -> !p.isSold();
 
     public void useFilter(Predicate<PropertyAsset> filter) {
         List<PropertyAsset> filtered = properties.stream()
@@ -86,31 +87,31 @@ public class BekasiRealtyGroup {
     // TASK 6
     public void calculateTotalAvailablePropertyPrice() {
         Double total = properties.stream()
-                .filter(p->!p.isSold())
+                .filter(p -> !p.isSold())
                 .mapToDouble(PropertyAsset::getPrice)
                 .sum();
         System.out.println("Total harga semua property yang belum terjual: " + PropertyAsset.formatRupiah(total));
 
         OptionalDouble avgHousePrice = properties.stream()
-                .filter(p->p.getPropertyType().equalsIgnoreCase("rumah"))
+                .filter(p -> p.getPropertyType().equalsIgnoreCase("rumah"))
                 .mapToDouble(PropertyAsset::getPrice)
                 .average();
         System.out.println("Rata-rata harga RUMAH: " + PropertyAsset.formatRupiah(avgHousePrice.getAsDouble()));
 
         OptionalDouble avgRukoPrice = properties.stream()
-                .filter(p->p.getPropertyType().equalsIgnoreCase("ruko"))
+                .filter(p -> p.getPropertyType().equalsIgnoreCase("ruko"))
                 .mapToDouble(PropertyAsset::getPrice)
                 .average();
         System.out.println("Rata-rata harga RUKO: " + PropertyAsset.formatRupiah(avgRukoPrice.getAsDouble()));
 
         OptionalDouble avgTanahPrice = properties.stream()
-                .filter(p->p.getPropertyType().equalsIgnoreCase("tanah"))
+                .filter(p -> p.getPropertyType().equalsIgnoreCase("tanah"))
                 .mapToDouble(PropertyAsset::getPrice)
                 .average();
         System.out.println("Rata-rata harga TANAH: " + PropertyAsset.formatRupiah(avgTanahPrice.getAsDouble()));
 
         OptionalDouble avgApartPrice = properties.stream()
-                .filter(p->p.getPropertyType().equalsIgnoreCase("apartemen"))
+                .filter(p -> p.getPropertyType().equalsIgnoreCase("apartemen"))
                 .mapToDouble(PropertyAsset::getPrice)
                 .average();
         System.out.println("Rata-rata harga APARTEMEN: " + PropertyAsset.formatRupiah(avgApartPrice.getAsDouble()));
@@ -140,6 +141,69 @@ public class BekasiRealtyGroup {
             propertyList.forEach(PropertyAsset::print);
         });
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`");
+    }
+
+    // TASK 8
+    Supplier<PropertyAsset> propertySupplier = PropertyAsset::new;
+
+    public void createNewProperty(Supplier<PropertyAsset> supplier) {
+        PropertyAsset property = supplier.get();
+        properties.add(property);
+        System.out.println("Properti baru ditambahkan");
+    }
+
+    Function<String, PropertyAsset> createPropertyWithID = PropertyAsset::new;
+
+    // TASK 9
+    public void chainSort() {
+        properties.sort(
+                Comparator.comparing(PropertyAsset::getLocation)
+                        .thenComparing(PropertyAsset::getPrice).reversed());
+        properties.forEach(PropertyAsset::print);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`");
+        properties.sort(
+                Comparator.comparing(PropertyAsset::getPropertyType)
+                        .thenComparing(PropertyAsset::getBuildYear, Comparator.reverseOrder()));
+        properties.forEach(PropertyAsset::print);
+    }
+
+    // TASK 10
+    public void generateReport() {
+        StringBuilder builder = new StringBuilder();
+        int totalProperties = properties.size();
+        int soldProperties = (int) properties.stream().filter(PropertyAsset::isSold).count();
+        int availableProperties = (int) properties.stream().filter(p -> !p.isSold()).count();
+        List<PropertyAsset> list = properties.stream()
+                .filter(p -> !p.isSold())
+                .sorted(Comparator.comparing(PropertyAsset::getPrice))
+                .toList();
+        Double total = list.stream().mapToDouble(PropertyAsset::getPrice).sum();
+        builder
+                .append("======================================================================================\n")
+                .append("LAPORAN ASSETS PROPERTY BEKASI REALTY GROUP\n")
+                .append("======================================================================================\n")
+                .append("\n")
+                .append("Total Property\t\t: " + totalProperties + "\n")
+                .append("Property Terjual\t: " + soldProperties + "\n")
+                .append("Property Tersedia\t: " + availableProperties + "\n")
+                .append("\n")
+                .append("--- PROPERTY TERSEDIA (Sorted by Harga) ---\n");
+        for (int i = 0; i < list.size(); i++) {
+            builder.append(i+1 + ". [" + list.get(i).getId() + "] " + list.get(i).getPropertyName() + " | " + PropertyAsset.formatRupiah(list.get(i).getPrice()) + "\n");
+        }
+        builder
+                .append("\n")
+                .append("--- TOTAL NILAI ASSETS TERSEDIA ---\n")
+                .append("Total: " + PropertyAsset.formatRupiah(total) + "\n")
+                .append("\n")
+                .append("--- DISTRIBUSI PER LOKASI ---\n");
+        Map<String, Long> countByLocation = properties.stream()
+                .collect(Collectors.groupingBy(PropertyAsset::getLocation, Collectors.counting()));
+        countByLocation.forEach((location, count) -> {
+            builder.append((String.format("%-15s : %d property\n", location, count)));
+        });
+        builder.append("======================================================================================\n");
+        System.out.println(builder);
     }
 
     private void init() {

@@ -26,6 +26,14 @@ public class PropertyAsset {
         this.buildYear = buildYear;
     }
 
+    public PropertyAsset() {
+
+    }
+
+    public PropertyAsset(String id) {
+        this.id = id;
+    }
+
     public void print() {
         String statusTerjual = this.sold ? "Terjual" : "Belum Terjual";
 

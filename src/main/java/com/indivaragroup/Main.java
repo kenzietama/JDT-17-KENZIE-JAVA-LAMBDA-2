@@ -48,5 +48,19 @@ public class Main {
         System.out.println("TASK 7");
         developer.groupingCollector();
 
+        //TASK 8
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("TASK 8");
+
+        //TASK 9
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("TASK 9");
+        developer.chainSort();
+
+        //TASK 10
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("TASK 10");
+        developer.generateReport();
+
     }
 }
