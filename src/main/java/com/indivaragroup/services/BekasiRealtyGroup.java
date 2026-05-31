@@ -3,21 +3,23 @@ package com.indivaragroup.services;
 import com.indivaragroup.services.dto.PropertyAsset;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 
 public class BekasiRealtyGroup {
-    private List<PropertyAsset> properties = new ArrayList<>();
+    private final List<PropertyAsset> properties = new ArrayList<>();
+    // CHALLENGE 2
+    public Map<String, DoubleSummaryStatistics> statistics;
 
     public BekasiRealtyGroup() {
         init();
         System.out.println("TASK 1");
         display.accept(properties);
+
+        // CHALLENGE 2
+        statistics = properties.stream()
+                .collect(Collectors.groupingBy(PropertyAsset::getPropertyType, Collectors.summarizingDouble(PropertyAsset::getPrice)));
     }
 
     // TASK 1
@@ -26,7 +28,7 @@ public class BekasiRealtyGroup {
     // TASK 2
     public void filterUnSold() {
         List<PropertyAsset> copy = new ArrayList<>(properties);
-        copy.removeIf(p -> p.isSold());
+        copy.removeIf(PropertyAsset::isSold);
         copy.forEach(PropertyAsset::print);
     }
 
@@ -46,7 +48,7 @@ public class BekasiRealtyGroup {
     public void useFilter(Predicate<PropertyAsset> filter) {
         List<PropertyAsset> filtered = properties.stream()
                 .filter(filter)
-                .collect(toList());
+                .toList();
 
         filtered.forEach(PropertyAsset::print);
     }
@@ -66,7 +68,7 @@ public class BekasiRealtyGroup {
     public void filterCombo() {
         List<PropertyAsset> filtered = properties.stream()
                 .filter(landAreaMoreThan100.and(available))
-                .collect(toList());
+                .toList();
 
         filtered.forEach(PropertyAsset::print);
     }
@@ -204,6 +206,21 @@ public class BekasiRealtyGroup {
         });
         builder.append("======================================================================================\n");
         System.out.println(builder);
+    }
+
+    // CHALLENGE 1
+    public BiFunction<String, String, List<PropertyAsset>> searchTypeAndLocation = (type, location) ->
+            properties
+                .stream()
+                .filter(p->p.getPropertyType().equalsIgnoreCase(type))
+                .filter(p->p.getLocation().equalsIgnoreCase(location))
+                .toList();
+
+    // CHALLENGE 3
+    public Optional<PropertyAsset> searchById(String id) {
+        return properties.stream()
+                .filter(p->p.getId().equalsIgnoreCase(id))
+                .findFirst();
     }
 
     private void init() {

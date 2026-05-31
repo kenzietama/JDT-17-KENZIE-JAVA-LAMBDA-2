@@ -1,6 +1,7 @@
 package com.indivaragroup;
 
 import com.indivaragroup.services.BekasiRealtyGroup;
+import com.indivaragroup.services.dto.PropertyAsset;
 
 public class Main {
     public static void main(String[] args) {
@@ -62,5 +63,25 @@ public class Main {
         System.out.println("TASK 10");
         developer.generateReport();
 
+        //CHALLENGE 1
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("CHALLENGE 1");
+        developer.searchTypeAndLocation.apply("RUMAH","Bekasi Selatan").forEach(PropertyAsset::print);
+
+        // CHALLENGE 2
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("CHALLENGE 2");
+        developer.statistics.forEach((type, stats) -> {
+            System.out.println("--- Statistik Tipe: " + type + " ---");
+            System.out.println("Jumlah : " + stats.getCount());
+            System.out.println("Harga Min   : " + PropertyAsset.formatRupiah(stats.getMin()));
+            System.out.println("Harga Max   : " + PropertyAsset.formatRupiah(stats.getMax()));
+            System.out.println("Rata-rata   : " + PropertyAsset.formatRupiah(stats.getAverage()));
+        });
+
+        // CHALLENGE 3
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("CHALLENGE 3");
+        developer.searchById("P01").ifPresentOrElse(PropertyAsset::print, () -> System.out.println("Property tidak ditemukan"));
     }
 }
