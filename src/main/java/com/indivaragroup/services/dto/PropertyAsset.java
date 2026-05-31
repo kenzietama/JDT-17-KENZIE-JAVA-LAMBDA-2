@@ -40,7 +40,7 @@ public class PropertyAsset {
         NumberFormat nf = NumberFormat.getInstance(new Locale("id", "ID"));
         String hargaFormat = "Rp " + nf.format(this.price);
 
-        System.out.printf("[%s] %s | %s | %s | %s | %dm² | %s%n",
+        System.out.printf("[%s] %-28s | %-10s | %-15s | %18s | %3dm² | %s%n",
                 this.id,
                 this.propertyName,
                 this.propertyType,

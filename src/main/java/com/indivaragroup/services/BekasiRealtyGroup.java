@@ -180,6 +180,7 @@ public class BekasiRealtyGroup {
                 .sorted(Comparator.comparing(PropertyAsset::getPrice))
                 .toList();
         Double total = list.stream().mapToDouble(PropertyAsset::getPrice).sum();
+        int i = 1;
         builder
                 .append("======================================================================================\n")
                 .append("LAPORAN ASSETS PROPERTY BEKASI REALTY GROUP\n")
@@ -190,8 +191,9 @@ public class BekasiRealtyGroup {
                 .append("Property Tersedia\t: " + availableProperties + "\n")
                 .append("\n")
                 .append("--- PROPERTY TERSEDIA (Sorted by Harga) ---\n");
-        for (int i = 0; i < list.size(); i++) {
-            builder.append(i+1 + ". [" + list.get(i).getId() + "] " + list.get(i).getPropertyName() + " | " + PropertyAsset.formatRupiah(list.get(i).getPrice()) + "\n");
+        for (PropertyAsset property : list) {
+            builder.append(String.format("%d. [%s] %-30s | %s \n", i, property.getId(), property.getPropertyName(), PropertyAsset.formatRupiah(property.getPrice())));
+            i++;
         }
         builder
                 .append("\n")
@@ -199,11 +201,10 @@ public class BekasiRealtyGroup {
                 .append("Total: " + PropertyAsset.formatRupiah(total) + "\n")
                 .append("\n")
                 .append("--- DISTRIBUSI PER LOKASI ---\n");
-        Map<String, Long> countByLocation = properties.stream()
-                .collect(Collectors.groupingBy(PropertyAsset::getLocation, Collectors.counting()));
-        countByLocation.forEach((location, count) -> {
-            builder.append((String.format("%-15s : %d property\n", location, count)));
-        });
+        properties.stream()
+                        .collect(Collectors.groupingBy(PropertyAsset::getLocation, Collectors.counting()))
+                                .forEach((location, count) ->
+                                    builder.append((String.format("%-15s : %d property%n", location, count))));
         builder.append("======================================================================================\n");
         System.out.println(builder);
     }
