@@ -1,13 +1,16 @@
 package com.indivaragroup;
 
-import com.indivaragroup.services.BekasiRealtyGroup;
-import com.indivaragroup.services.dto.PropertyAsset;
+import com.indivaragroup.lambda.exam.property.service.PropertyService;
+import com.indivaragroup.lambda.exam.property.util.PropertyFormatter;
 
 public class Main {
     public static void main(String[] args) {
-        BekasiRealtyGroup developer = new BekasiRealtyGroup();
+        PropertyService developer = new PropertyService();
 
-        // NB: MAAF MAS TUGAS SEBELUMNYA YANG SEMPAK ITU SUDAH PAKAI STREAM KARENA PRAKTIS AJA ENAK
+        // TASK 1
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("TASK 1");
+        developer.displayAllProperties();
 
         // TASK 2
         System.out.println("---------------------------------------------------------------------------------------------------------");
@@ -22,16 +25,9 @@ public class Main {
         // TASK 4
         System.out.println("---------------------------------------------------------------------------------------------------------");
         System.out.println("TASK 4");
-        System.out.println("Filter RUMAH saja:");
         developer.filterHouseOnly();
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        System.out.println("Filter lokasi Bekasi Selatan:");
         developer.filterLocationBekasiSelatan();
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        System.out.println("Filter harga dibawah 1M:");
         developer.filterPriceUnder1B();
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        System.out.println("Filter luas tanah > 100m^2 dan belum terjual:");
         developer.filterCombo();
 
         // TASK 5
@@ -66,22 +62,16 @@ public class Main {
         //CHALLENGE 1
         System.out.println("---------------------------------------------------------------------------------------------------------");
         System.out.println("CHALLENGE 1");
-        developer.searchTypeAndLocation.apply("RUMAH","Bekasi Selatan").forEach(PropertyAsset::print);
+        developer.searchTypeAndLocation.apply("RUMAH","Bekasi Selatan").forEach(PropertyFormatter::print);
 
         // CHALLENGE 2
         System.out.println("---------------------------------------------------------------------------------------------------------");
         System.out.println("CHALLENGE 2");
-        developer.statistics.forEach((type, stats) -> {
-            System.out.println("--- Statistik Tipe: " + type + " ---");
-            System.out.println("Jumlah : " + stats.getCount());
-            System.out.println("Harga Min   : " + PropertyAsset.formatRupiah(stats.getMin()));
-            System.out.println("Harga Max   : " + PropertyAsset.formatRupiah(stats.getMax()));
-            System.out.println("Rata-rata   : " + PropertyAsset.formatRupiah(stats.getAverage()));
-        });
+        developer.getStatistics();
 
         // CHALLENGE 3
         System.out.println("---------------------------------------------------------------------------------------------------------");
         System.out.println("CHALLENGE 3");
-        developer.searchById("P01").ifPresentOrElse(PropertyAsset::print, () -> System.out.println("Property tidak ditemukan"));
+        developer.searchById("P01").ifPresentOrElse(PropertyFormatter::print, () -> System.out.println("Property tidak ditemukan"));
     }
 }
